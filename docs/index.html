@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ジムサクラボ | あなただけのAI秘書サービス</title>
+    <meta name="description" content="ジムサクラボの公式サイトです。守秘義務100%、あなたの隣で業務を支えるAI秘書をご提案します。" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: '#fff0f5',
+                100: '#ffe4e9',
+                200: '#fecdd7',
+                300: '#fea3b4',
+                400: '#fd7193',
+                500: '#f63d68', // Neon Pink Accent
+                600: '#e11d48',
+                700: '#be123c',
+                800: '#9f1239',
+                900: '#881337',
+                950: '#4c0519',
+              },
+              slate: {
+                850: '#1e293b',
+                900: '#0f172a',
+                950: '#020617', // Main Dark Background
+              }
+            },
+            fontFamily: {
+              sans: ['"Noto Sans JP"', 'sans-serif'],
+              heading: ['"Zen Kaku Gothic New"', 'sans-serif'],
+              english: ['"Montserrat"', 'sans-serif'],
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.5s ease-out',
+              'fade-in-up': 'fadeInUp 0.8s ease-out',
+              'float': 'float 6s ease-in-out infinite',
+              'pulse-glow': 'pulseGlow 3s infinite',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              fadeInUp: {
+                '0%': { opacity: '0', transform: 'translateY(20px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
+              },
+              pulseGlow: {
+                '0%, 100%': { boxShadow: '0 0 10px rgba(246, 61, 104, 0.2)' },
+                '50%': { boxShadow: '0 0 20px rgba(246, 61, 104, 0.6)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+
+<link rel="stylesheet" href="/index.css">
+  <script type="importmap">
+{
+  "imports": {
+    "lucide-react": "https://esm.sh/lucide-react@0.292.0",
+    "react": "https://esm.sh/react@18.2.0",
+    "react/": "https://esm.sh/react@18.2.0/",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "react-dom/": "https://esm.sh/react-dom@18.2.0/",
+    "react-router-dom": "https://esm.sh/react-router-dom@6.22.3?deps=react@18.2.0,react-dom@18.2.0,@remix-run/router@1.15.3",
+    "@remix-run/router": "https://esm.sh/@remix-run/router@1.15.3"
+  }
+}
+</script>
+  <script type="module" crossorigin src="/assets/index-DQCRvqSg.js"></script>
+</head>
+  <body class="bg-slate-950 text-slate-200 antialiased font-sans selection:bg-brand-500 selection:text-white overflow-x-hidden">
+    <div id="root"></div>
+</body>
+</html>
