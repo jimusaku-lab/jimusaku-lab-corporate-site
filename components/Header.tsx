@@ -1,13 +1,16 @@
 // components/Header.tsx
+// components/Header.tsx
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Mail } from 'lucide-react';
+import logo from '../logo.png';   // ★ ここでロゴ画像を取り込む
 
 import {
   NAV_ITEMS_JP,
   NAV_ITEMS_EN,
   COMPANY_INFO_JP,
   COMPANY_INFO_EN,
+  UI_TEXT,
 } from '../constants';
 import { useLanguage } from './LanguageContext';
 
