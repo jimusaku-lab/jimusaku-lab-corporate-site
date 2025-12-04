@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { Header } from './components/Header';
+import Header from './components/Header';
 import { Hero } from './components/Hero';
 import { Services } from './components/Services';
 import { CaseStudies } from './components/CaseStudies';
@@ -29,10 +29,25 @@ const App: React.FC = () => {
       <ScrollToTop />
       <Header />
       <main>
+      <main>
         <Routes>
+          {/* トップページ（ホーム） */}
           <Route path="/" element={<LandingPage />} />
+
+          {/* 各セクション付きのパスもすべて LandingPage を表示 */}
+          <Route path="/hero" element={<LandingPage />} />
+          <Route path="/services" element={<LandingPage />} />
+          <Route path="/cases" element={<LandingPage />} />
+          <Route path="/company" element={<LandingPage />} />
+          <Route path="/contact" element={<LandingPage />} />
+
+          {/* サービス詳細ページ（/services/backoffice など） */}
           <Route path="/services/:id" element={<ServiceDetail />} />
+
+          {/* それ以外のパスは全部ホームへフォールバック */}
+          <Route path="*" element={<LandingPage />} />
         </Routes>
+      </main>
       </main>
       <Footer />
     </div>
