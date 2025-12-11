@@ -1,9 +1,8 @@
 // components/Header.tsx
-// components/Header.tsx
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Mail } from 'lucide-react';
-import logo from '../logo.png';   // ★ ここでロゴ画像を取り込む
+import logo from '../logo.png'; // ロゴ画像
 
 import {
   NAV_ITEMS_JP,
@@ -11,7 +10,8 @@ import {
   COMPANY_INFO_JP,
   COMPANY_INFO_EN,
   UI_TEXT,
-} from '../constants';
+} from "../constants";
+
 import { useLanguage } from './LanguageContext';
 
 // ヘッダー右上の CTA ボタン（デスクトップ / モバイル共通）
@@ -29,9 +29,42 @@ const HeaderCta: React.FC<{ isHome: boolean }> = ({ isHome }) => {
   );
 };
 
+// Header コンポーネントの中
 const Header: React.FC = () => {
   const { language, setLanguage } = useLanguage();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleNavClick = (hash: string) =>
+    (event: React.MouseEvent<HTMLAnchorElement>) => {
+      event.preventDefault();
+
+      const targetId = hash.replace('#', '');
+
+      // その時点で DOM にある要素を毎回取り直す関数
+      const scrollToTarget = () => {
+        const target = document.getElementById(targetId);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      };
+
+      // モバイルメニューは閉じる
+      setIsMobileMenuOpen(false);
+
+      // いまトップページ以外（サービス詳細など）にいる場合
+      if (location.pathname !== '/') {
+        // まずトップページへ戻る
+        navigate('/', { replace: false });
+
+        // ルーティングで画面が切り替わったあとにスクロール
+        setTimeout(scrollToTarget, 150);
+      } else {
+        // もともとトップページにいる場合は、そのままスクロールだけ
+        scrollToTarget();
+      }
+    };
+
 
   const navItems = language === 'ja' ? NAV_ITEMS_JP : NAV_ITEMS_EN;
   const companyInfo = language === 'ja' ? COMPANY_INFO_JP : COMPANY_INFO_EN;
@@ -58,69 +91,56 @@ const Header: React.FC = () => {
 
   const textClass = 'text-slate-100';
 
-  const handleNavClick = () => {
-    setIsMobileMenuOpen(false);
-  };
-
   return (
     <header className={`fixed w-full z-50 transition-all duration-300 ${headerBgClass}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-        {/* ロゴ部分 */}
-        <div className="flex items-center">
-          <Link to="/" className="flex items-center gap-4 group">
-            <img
-              src={import.meta.env.BASE_URL + 'logo.png'}
-              alt="Jimusaku Lab Logo"
-              className="h-12 md:h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
-            />
-            <span className="text-xl sm:text-2xl font-heading font-bold tracking-widest text-brand-400 drop-shadow-lg">
-              {companyInfo.name}
-            </span>
-          </Link>
-        </div>
 
-        {/* デスクトップ ナビ */}
-        <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
-          {navItems
-            .filter((item: any) => item.path !== '#contact')
-            .map((item: any) => (
-              <a
-                key={item.label}
-                href={`${import.meta.env.BASE_URL}${item.path}${item.hash ?? ''}`}
-                className={`text-sm font-medium tracking-wider transition-all hover:text-brand-400 relative group ${textClass}`}
-              >
-                {item.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-500 transition-all group-hover:w-full" />
-              </a>
-            ))}
+{/* ロゴ部分 */}
+<div className="flex items-center">
+  <Link
+    to="/"
+    onClick={handleNavClick('#hero')}   // ← これを追加
+    className="flex items-center gap-4 group"
+  >
+    <img
+      src={import.meta.env.BASE_URL + 'logo.png'}
+      alt="Jimusaku Lab Logo"
+      className="h-12 md:h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+    />
+    <span className="text-xl sm:text-2xl font-heading font-bold tracking-widest text-brand-400 drop-shadow-lg">
+      {companyInfo.name}
+    </span>
+  </Link>
+</div>
 
-          {/* 言語切替ボタン */}
-          <div className="flex items-center bg-slate-900/50 border border-white/10 rounded-lg px-1">
-            <button
-              onClick={() => setLanguage('ja')}
-              className={`px-2 py-1 text-[10px] font-bold rounded transition-all ${
-                language === 'ja'
-                  ? 'text-slate-950 bg-brand-400 shadow-[0_0_10px_#fd7193]'
-                  : 'text-slate-400 hover:text-white'
-              }`}
+      {/* デスクトップ ナビ */}
+      <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
+        {/* メインナビ（ホーム / できること / 成功事例 / 会社紹介 ） */}
+        {navItems
+          // 「ご相談」は後で個別に書くので除外
+          .filter((item: any) => item.hash !== '#contact')
+          .map((item: any) => (
+            <a
+              key={item.label}
+              href={item.hash}
+              onClick={handleNavClick(item.hash)}
+              className={`text-sm font-medium tracking-wider transition-all hover:text-brand-400 relative group ${textClass}`}
             >
-              JP
-            </button>
-            <button
-              onClick={() => setLanguage('en')}
-              className={`px-2 py-1 text-[10px] font-bold rounded transition-all ${
-                language === 'en'
-                  ? 'text-slate-950 bg-brand-400 shadow-[0_0_10px_#fd7193]'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              EN
-            </button>
-          </div>
+              {item.label}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-500 transition-all group-hover:w-full" />
+            </a>
+          ))}
 
-          {/* CTA ボタン */}
-          <HeaderCta isHome={isHome} />
-        </nav>
+        {/* ご相談だけは contact セクションに飛ばす */}
+        <a
+          href="#contact"
+          onClick={handleNavClick('#contact')}
+          className={`text-sm font-medium tracking-wider transition-all hover:text-brand-400 relative group ${textClass}`}
+        >
+          ご相談
+          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-500 transition-all group-hover:w-full" />
+        </a>
+      </nav>
 
         {/* モバイル用メニューボタン */}
         <button
