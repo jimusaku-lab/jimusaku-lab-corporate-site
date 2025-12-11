@@ -9,6 +9,8 @@ import {
   Database,
   Smile,
   HeartHandshake,
+  ShieldCheck,
+  Utensils,
 } from 'lucide-react';
 import { CompanyInfo, ServiceItem, NavItem, CaseStudy } from './types';
 
@@ -172,6 +174,39 @@ export const CASE_STUDIES_JP: CaseStudy[] = [
     tags: ["PDF読取", "ストレスゼロ", "事務代行"],
     icon: Database,
     serviceIds: ["backoffice", "system-dev"]
+  },
+  {
+    id: "case-insurance-crm",
+    industry: "保険代理店業 様",
+    title: "散在する書類・データの一元化",
+    problem: "契約更新書類や顧客情報がシステムと紙で散在し、月末の請求や契約管理業務に時間がかかっていた。",
+    solution: "AI秘書が保険証券や書類を読み取り、データを自動抽出・一元化。契約更新通知も自動化しました。",
+    image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=2070&auto=format&fit=crop",
+    tags: ["事務の自動化", "請求ミスゼロ", "顧客管理"],
+    icon: ShieldCheck,
+    serviceIds: ["backoffice", "system-dev"]
+  },
+  {
+    id: "case-training-design",
+    industry: "研修コンサル企業 様",
+    title: "「コピペ地獄」からの脱却とコンテンツ展開",
+    problem: "研修ごとの膨大な事務作業（メール・Excel等のコピペ地獄）や報告書作成、既存資料の別業界向けカスタマイズに忙殺されていた。",
+    solution: "AIが日程調整や報告書の「たたき台」を自動作成し、雑務を一掃。既存資料の用語変換による別業界向け展開もAIが高速化した。",
+    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
+    tags: ["コピペ地獄脱出", "報告書自動化", "コンテンツ再構成"],
+    icon: FileText,
+    serviceIds: ["backoffice", "system-dev", "consulting"]
+  },
+  {
+    id: "case-restaurant-hr",
+    industry: "飲食店オーナー 様",
+    title: "勤怠管理のストレスからの解放",
+    problem: "複数店舗のバラバラな勤怠表の確認作業が毎月のストレスだった。",
+    solution: "AI秘書が全店舗の勤怠データを読み取り、給与データを作成。メニュー画像生成や愚痴聞きも担当。",
+    image: "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070&auto=format&fit=crop",
+    tags: ["ストレスゼロ", "AI画像作成", "勤怠管理"],
+    icon: Utensils,
+    serviceIds: ["backoffice", "marketing", "consulting"]
   }
 ];
 
@@ -343,6 +378,39 @@ export const CASE_STUDIES_EN: CaseStudy[] = [
     tags: ["Read PDF", "Zero Stress", "Admin Help"],
     icon: Database,
     serviceIds: ["backoffice", "system-dev"]
+  },
+  {
+    id: "case-insurance-crm",
+    industry: "Insurance Agency",
+    title: "Centralizing Scattered Documents & Data",
+    problem: "Contract renewals and customer info were scattered across paper and systems, slowing down billing.",
+    solution: "AI Secretary reads complex PDFs (policies), extracts data, and automates billing and renewal notifications.",
+    image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=2070&auto=format&fit=crop",
+    tags: ["Auto Admin", "Zero Billing Errors", "CRM"],
+    icon: ShieldCheck,
+    serviceIds: ["backoffice", "system-dev"]
+  },
+  {
+    id: "case-training-design",
+    industry: "Training Consultant",
+    title: "Escaping 'Copy-Paste Hell' & Scaling Content",
+    problem: "Bogged down by admin tasks (emails, Excel copy-pasting), creating reports, and customizing materials for different industries.",
+    solution: "AI automates scheduling and drafts reports. It also rapidly reconfigures existing content for new industries by swapping terminology.",
+    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
+    tags: ["No More Copy-Paste", "Auto Reports", "Content Scaling"],
+    icon: FileText,
+    serviceIds: ["backoffice", "system-dev", "consulting"]
+  },
+  {
+    id: "case-restaurant-hr",
+    industry: "Restaurant Owner",
+    title: "Freedom from Timesheet Stress",
+    problem: "Checking messy timesheets from multiple shops every month was a huge stress.",
+    solution: "AI reads any timesheet format, preps payroll, generates menu images, and listens to venting.",
+    image: "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070&auto=format&fit=crop",
+    tags: ["Zero Stress", "AI Images", "Attendance Mgmt"],
+    icon: Utensils,
+    serviceIds: ["backoffice", "marketing", "consulting"]
   }
 ];
 
