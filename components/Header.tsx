@@ -142,6 +142,30 @@ const Header: React.FC = () => {
         </a>
       </nav>
 
+      {/* 言語切替ボタン */}
+      <div className="flex items-center bg-slate-900/50 border border-white/10 rounded-lg px-1">
+        <button
+          onClick={() => setLanguage('ja')}
+          className={`px-2 py-1 text-[10px] font-bold rounded transition-all ${
+            language === 'ja'
+              ? 'text-slate-950 bg-brand-400 shadow-[0_0_10px_#f07193]'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          JP
+        </button>
+        <button
+          onClick={() => setLanguage('en')}
+          className={`px-2 py-1 text-[10px] font-bold rounded transition-all ${
+            language === 'en'
+              ? 'text-slate-950 bg-brand-400 shadow-[0_0_10px_#f07193]'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          EN
+        </button>
+      </div>
+
         {/* モバイル用メニューボタン */}
         <button
           className="md:hidden p-2 rounded-md text-white hover:bg-white/10 transition-colors"
