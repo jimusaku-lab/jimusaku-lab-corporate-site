@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     // ⭐ GitHub Pages 用の base（ここが一番大事）
-    base: '/jimusaku-lab-corporate-site/',
+    base: '/',
 
     server: {
       port: 3000,
