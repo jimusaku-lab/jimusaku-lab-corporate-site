@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Mail, MapPin, Send, MessageSquare } from 'lucide-react';
 import { COMPANY_INFO_JP, COMPANY_INFO_EN, UI_TEXT } from '../constants';
 import { useLanguage } from './LanguageContext';
@@ -7,6 +7,88 @@ export const Contact: React.FC = () => {
   const { language } = useLanguage();
   const companyInfo = language === 'ja' ? COMPANY_INFO_JP : COMPANY_INFO_EN;
   const t = UI_TEXT[language];
+  const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL as string;
+  const N8N_WEBHOOK_SECRET = import.meta.env.VITE_N8N_WEBHOOK_SECRET as string;
+
+  type FormState = {
+    name: string;
+    email: string;
+    message: string;
+  };
+
+  type SubmitStatus = "idle" | "sending" | "success" | "error";
+
+  const [form, setForm] = useState<FormState>({
+    name: "",
+    email: "",
+    message: ""
+  });
+  const [status, setStatus] = useState<SubmitStatus>("idle");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (status === "sending") {
+      return;
+    }
+
+    const baseWebhookUrl = N8N_WEBHOOK_URL;
+    if (!baseWebhookUrl) {
+      setStatus("error");
+      setErrorMessage("Webhook URLが未設定です");
+      return;
+    }
+
+    const hasSecretParam = baseWebhookUrl.includes("secret=");
+    if (!hasSecretParam && !N8N_WEBHOOK_SECRET) {
+      setStatus("error");
+      setErrorMessage("Webhook secretが未設定です");
+      return;
+    }
+
+    const webhookUrl = hasSecretParam
+      ? baseWebhookUrl
+      : `${baseWebhookUrl}${baseWebhookUrl.includes("?") ? "&" : "?"}secret=${encodeURIComponent(N8N_WEBHOOK_SECRET)}`;
+
+    setStatus("sending");
+    setErrorMessage("");
+
+    try {
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          message: form.message,
+          source: "jimusaku-lab.com",
+          page: "contact"
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`送信に失敗しました (${response.status})`);
+      }
+
+      setStatus("success");
+      setForm({
+        name: "",
+        email: "",
+        message: ""
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "送信に失敗しました";
+      setStatus("error");
+      setErrorMessage(message);
+    }
+  };
 
   return (
     <section id="contact" className="py-32 bg-slate-950 text-white relative overflow-hidden border-t border-slate-900">
@@ -56,12 +138,15 @@ export const Contact: React.FC = () => {
                {t.contact.formTitle}
             </h4>
 
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <label htmlFor="name" className="block text-xs font-bold tracking-widest text-brand-400 uppercase">{t.contact.nameLabel}</label>
                 <input 
                   type="text" 
                   id="name" 
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
                   className="w-full px-5 py-4 bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-700 focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 outline-none transition-all"
                   placeholder={t.contact.namePlaceholder}
                 />
@@ -71,6 +156,9 @@ export const Contact: React.FC = () => {
                 <input 
                   type="email" 
                   id="email" 
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
                   className="w-full px-5 py-4 bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-700 focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 outline-none transition-all"
                   placeholder="email@example.com"
                 />
@@ -79,17 +167,27 @@ export const Contact: React.FC = () => {
                 <label htmlFor="message" className="block text-xs font-bold tracking-widest text-brand-400 uppercase">{t.contact.msgLabel}</label>
                 <textarea 
                   id="message" 
+                  name="message"
                   rows={5} 
+                  value={form.message}
+                  onChange={handleChange}
                   className="w-full px-5 py-4 bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-700 focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 outline-none transition-all resize-none"
                   placeholder={t.contact.msgPlaceholder}
                 ></textarea>
               </div>
               <button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-brand-600 to-brand-500 text-white font-heading font-bold tracking-widest py-5 rounded-xl hover:to-brand-400 transition-all shadow-[0_0_20px_rgba(246,61,104,0.4)] hover:shadow-[0_0_30px_rgba(246,61,104,0.6)] transform hover:-translate-y-1 flex items-center justify-center gap-3 mt-4"
+                disabled={status === "sending"}
+                className="w-full bg-gradient-to-r from-brand-600 to-brand-500 text-white font-heading font-bold tracking-widest py-5 rounded-xl hover:to-brand-400 transition-all shadow-[0_0_20px_rgba(246,61,104,0.4)] hover:shadow-[0_0_30px_rgba(246,61,104,0.6)] transform hover:-translate-y-1 flex items-center justify-center gap-3 mt-4 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <Send size={18} /> {t.contact.submit}
+                <Send size={18} /> {status === "sending" ? "送信中..." : t.contact.submit}
               </button>
+              {status === "success" && (
+                <p className="text-sm text-emerald-400">{t.contact.successMessage ?? "送信ありがとうございました。追ってご連絡いたします。"}</p>
+              )}
+              {status === "error" && (
+                <p className="text-sm text-red-400">{errorMessage}</p>
+              )}
             </form>
           </div>
         </div>
