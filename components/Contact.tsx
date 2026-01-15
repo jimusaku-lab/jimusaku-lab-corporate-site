@@ -60,18 +60,22 @@ export const Contact: React.FC = () => {
 
     try {
       console.log("webhookUrl", webhookUrl);
+      const bodyParams = new URLSearchParams({
+        name: form.name,
+        email: form.email,
+        message: form.message,
+        secret: N8N_WEBHOOK_SECRET,
+        source: "jimusaku-lab.com",
+        page: "contact",
+        receivedAt: new Date().toISOString()
+      });
+
       const response = await fetch(webhookUrl, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
         },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          message: form.message,
-          source: "jimusaku-lab.com",
-          page: "contact"
-        })
+        body: bodyParams
       });
 
       if (!response.ok) {
@@ -87,8 +91,31 @@ export const Contact: React.FC = () => {
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "送信に失敗しました";
-      setStatus("error");
-      setErrorMessage(message);
+      try {
+        await fetch(webhookUrl, {
+          method: "POST",
+          mode: "no-cors",
+          body: new URLSearchParams({
+            name: form.name,
+            email: form.email,
+            message: form.message,
+            secret: N8N_WEBHOOK_SECRET,
+            source: "jimusaku-lab.com",
+            page: "contact",
+            receivedAt: new Date().toISOString()
+          })
+        });
+        setStatus("success");
+        setErrorMessage(`Failed\n${webhookUrl}\n${message}\nno-cors fallback sent (response unreadable)`);
+        return;
+      } catch (fallbackError) {
+        const fallbackMessage = fallbackError instanceof Error
+          ? fallbackError.message
+          : "送信に失敗しました";
+        setStatus("error");
+        setErrorMessage(`Failed\n${webhookUrl}\n${message}\n${fallbackMessage}`);
+        return;
+      }
     }
   };
 
@@ -182,13 +209,13 @@ export const Contact: React.FC = () => {
                 disabled={status === "sending"}
                 className="w-full bg-gradient-to-r from-brand-600 to-brand-500 text-white font-heading font-bold tracking-widest py-5 rounded-xl hover:to-brand-400 transition-all shadow-[0_0_20px_rgba(246,61,104,0.4)] hover:shadow-[0_0_30px_rgba(246,61,104,0.6)] transform hover:-translate-y-1 flex items-center justify-center gap-3 mt-4 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <Send size={18} /> {status === "sending" ? "送信中..." : t.contact.submit}
+                <Send size={18} /> {status === "sending" ? "Sending..." : t.contact.submit}
               </button>
               {status === "success" && (
-                <p className="text-sm text-emerald-400">{t.contact.successMessage ?? "送信ありがとうございました。追ってご連絡いたします。"}</p>
+                <p className="text-sm text-emerald-400">Sent</p>
               )}
               {status === "error" && (
-                <p className="text-sm text-red-400">{errorMessage}</p>
+                <p className="text-sm text-red-400 whitespace-pre-line">Failed{errorMessage ? `\n${errorMessage}` : ""}</p>
               )}
             </form>
           </div>
