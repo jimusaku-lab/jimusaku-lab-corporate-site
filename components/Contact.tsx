@@ -37,6 +37,9 @@ export const Contact: React.FC = () => {
       return;
     }
 
+    setStatus("sending");
+    setErrorMessage("");
+
     const baseWebhookUrl = N8N_WEBHOOK_URL;
     if (!baseWebhookUrl) {
       setStatus("error");
@@ -55,10 +58,8 @@ export const Contact: React.FC = () => {
       ? baseWebhookUrl
       : `${baseWebhookUrl}${baseWebhookUrl.includes("?") ? "&" : "?"}secret=${encodeURIComponent(N8N_WEBHOOK_SECRET)}`;
 
-    setStatus("sending");
-    setErrorMessage("");
-
     try {
+      console.log("webhookUrl", webhookUrl);
       const response = await fetch(webhookUrl, {
         method: "POST",
         headers: {
@@ -74,7 +75,8 @@ export const Contact: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`送信に失敗しました (${response.status})`);
+        const responseText = await response.text();
+        throw new Error(`HTTP ${response.status} ${response.statusText}\n${responseText}`);
       }
 
       setStatus("success");
