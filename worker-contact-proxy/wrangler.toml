@@ -1,3 +1,7 @@
 name = "contact-proxy"
 main = "index.js"
 compatibility_date = "2025-01-01"
+
+# Required secrets (set via `wrangler secret put`):
+# - N8N_WEBHOOK_URL
+# - CONTACT_PROXY_SECRET
