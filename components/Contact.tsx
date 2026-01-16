@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Mail, MapPin, Send, MessageSquare } from 'lucide-react';
 import { COMPANY_INFO_JP, COMPANY_INFO_EN, UI_TEXT } from '../constants';
 import { useLanguage } from './LanguageContext';
@@ -24,6 +24,16 @@ export const Contact: React.FC = () => {
   });
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
+  const successTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (successTimeoutRef.current) {
+        window.clearTimeout(successTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -43,6 +53,7 @@ export const Contact: React.FC = () => {
 
     setStatus("sending");
     setErrorMessage("");
+    setSuccessMessage("");
 
     if (!endpoint) {
       setStatus("error");
@@ -51,45 +62,62 @@ export const Contact: React.FC = () => {
       return;
     }
 
-    const bodyParams = new URLSearchParams({
+    const payload = {
       name: form.name,
       email: form.email,
       message: form.message,
       source: "jimusaku-lab.com",
       page: "contact",
       receivedAt: new Date().toISOString()
-    });
+    };
 
     let nextStatus: SubmitStatus = "error";
-
     try {
       console.log("[contact] before fetch");
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+          "Content-Type": "application/json"
         },
-        body: bodyParams
+        body: JSON.stringify(payload)
       });
       console.log("[contact] after fetch", response.status);
 
+      const responseText = await response.text();
+      const trimmedText = responseText.trim();
+      let parsedBody: { ok?: boolean; message?: string } | null = null;
+      if (trimmedText) {
+        try {
+          parsedBody = JSON.parse(trimmedText);
+        } catch {
+          parsedBody = null;
+        }
+      }
       if (!response.ok) {
-        const responseText = await response.text();
         throw new Error(`HTTP ${response.status} ${response.statusText}\n${responseText}`);
       }
 
-      nextStatus = "success";
       setForm({
         name: "",
         email: "",
         message: ""
       });
+      setSuccessMessage(parsedBody?.message || (trimmedText === "OK" ? "Sent" : "Sent"));
+      nextStatus = "success";
     } catch (error) {
       const message = error instanceof Error ? error.message : "送信に失敗しました";
       setErrorMessage(message);
       nextStatus = "error";
     } finally {
       setStatus(nextStatus);
+      if (nextStatus === "success") {
+        if (successTimeoutRef.current) {
+          window.clearTimeout(successTimeoutRef.current);
+        }
+        successTimeoutRef.current = window.setTimeout(() => {
+          setStatus("idle");
+        }, 3000);
+      }
     }
   };
 
@@ -186,7 +214,7 @@ export const Contact: React.FC = () => {
                 <Send size={18} /> {status === "sending" ? "Sending..." : t.contact.submit}
               </button>
               {status === "success" && (
-                <p className="text-sm text-emerald-400">Sent</p>
+                <p className="text-sm text-emerald-400 whitespace-pre-line">{successMessage || "Sent"}</p>
               )}
               {status === "error" && (
                 <p className="text-sm text-red-400 whitespace-pre-line">Failed{errorMessage ? `\n${errorMessage}` : ""}</p>
