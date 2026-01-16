@@ -7,8 +7,7 @@ export const Contact: React.FC = () => {
   const { language } = useLanguage();
   const companyInfo = language === 'ja' ? COMPANY_INFO_JP : COMPANY_INFO_EN;
   const t = UI_TEXT[language];
-  const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL as string;
-  const N8N_WEBHOOK_SECRET = import.meta.env.VITE_N8N_WEBHOOK_SECRET as string;
+  const CONTACT_ENDPOINT = import.meta.env.VITE_CONTACT_ENDPOINT as string;
 
   type FormState = {
     name: string;
@@ -41,43 +40,25 @@ export const Contact: React.FC = () => {
     setStatus("sending");
     setErrorMessage("");
 
-    const webhookUrlRaw = N8N_WEBHOOK_URL;
-    const secret = N8N_WEBHOOK_SECRET;
-    const baseWebhookUrl = webhookUrlRaw;
-    if (!baseWebhookUrl) {
+    const endpoint = CONTACT_ENDPOINT;
+    if (!endpoint) {
       setStatus("error");
-      setErrorMessage("Webhook URLが未設定です");
-      console.error("[contact] early return reason =", "webhook URL is missing");
+      setErrorMessage("送信先URLが未設定です");
+      console.error("[contact] early return reason =", "contact endpoint is missing");
       return;
     }
-
-    const hasSecretParam = baseWebhookUrl.includes("secret=");
-    if (!hasSecretParam && !secret) {
-      setStatus("error");
-      setErrorMessage("Webhook secretが未設定です");
-      console.error("[contact] early return reason =", "webhook secret is missing");
-      return;
-    }
-
-    const webhookUrl = hasSecretParam
-      ? baseWebhookUrl
-      : `${baseWebhookUrl}${baseWebhookUrl.includes("?") ? "&" : "?"}secret=${encodeURIComponent(secret)}`;
 
     try {
-      console.log("[contact] webhookUrl(final) =", webhookUrl);
-      console.log("[contact] secret exists =", Boolean(secret));
-      console.log("[contact] url raw =", webhookUrlRaw);
       const bodyParams = new URLSearchParams({
         name: form.name,
         email: form.email,
         message: form.message,
-        secret,
         source: "jimusaku-lab.com",
         page: "contact",
         receivedAt: new Date().toISOString()
       });
 
-      const response = await fetch(webhookUrl, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
@@ -86,9 +67,9 @@ export const Contact: React.FC = () => {
       });
 
       if (!response.ok) {
-        const responseText = await response.text();
-        throw new Error(`HTTP ${response.status} ${response.statusText}\n${responseText}`);
-      }
+      const responseText = await response.text();
+      throw new Error(`HTTP ${response.status} ${response.statusText}\n${responseText}`);
+    }
 
       setStatus("success");
       setForm({
@@ -99,28 +80,27 @@ export const Contact: React.FC = () => {
     } catch (error) {
       const message = error instanceof Error ? error.message : "送信に失敗しました";
       try {
-        await fetch(webhookUrl, {
+        await fetch(endpoint, {
           method: "POST",
           mode: "no-cors",
           body: new URLSearchParams({
             name: form.name,
             email: form.email,
             message: form.message,
-            secret,
             source: "jimusaku-lab.com",
             page: "contact",
             receivedAt: new Date().toISOString()
           })
         });
         setStatus("success");
-        setErrorMessage(`Failed\n${webhookUrl}\n${message}\nno-cors fallback sent (response unreadable)`);
+        setErrorMessage(`Failed\n${endpoint}\n${message}\nno-cors fallback sent (response unreadable)`);
         return;
       } catch (fallbackError) {
         const fallbackMessage = fallbackError instanceof Error
           ? fallbackError.message
           : "送信に失敗しました";
         setStatus("error");
-        setErrorMessage(`Failed\n${webhookUrl}\n${message}\n${fallbackMessage}`);
+        setErrorMessage(`Failed\n${endpoint}\n${message}\n${fallbackMessage}`);
         return;
       }
     }
