@@ -34,37 +34,44 @@ export const Contact: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (status === "sending") {
+      console.error("[contact] early return reason =", "status is already sending");
       return;
     }
 
     setStatus("sending");
     setErrorMessage("");
 
-    const baseWebhookUrl = N8N_WEBHOOK_URL;
+    const webhookUrlRaw = N8N_WEBHOOK_URL;
+    const secret = N8N_WEBHOOK_SECRET;
+    const baseWebhookUrl = webhookUrlRaw;
     if (!baseWebhookUrl) {
       setStatus("error");
       setErrorMessage("Webhook URLが未設定です");
+      console.error("[contact] early return reason =", "webhook URL is missing");
       return;
     }
 
     const hasSecretParam = baseWebhookUrl.includes("secret=");
-    if (!hasSecretParam && !N8N_WEBHOOK_SECRET) {
+    if (!hasSecretParam && !secret) {
       setStatus("error");
       setErrorMessage("Webhook secretが未設定です");
+      console.error("[contact] early return reason =", "webhook secret is missing");
       return;
     }
 
     const webhookUrl = hasSecretParam
       ? baseWebhookUrl
-      : `${baseWebhookUrl}${baseWebhookUrl.includes("?") ? "&" : "?"}secret=${encodeURIComponent(N8N_WEBHOOK_SECRET)}`;
+      : `${baseWebhookUrl}${baseWebhookUrl.includes("?") ? "&" : "?"}secret=${encodeURIComponent(secret)}`;
 
     try {
-      console.log("webhookUrl", webhookUrl);
+      console.log("[contact] webhookUrl(final) =", webhookUrl);
+      console.log("[contact] secret exists =", Boolean(secret));
+      console.log("[contact] url raw =", webhookUrlRaw);
       const bodyParams = new URLSearchParams({
         name: form.name,
         email: form.email,
         message: form.message,
-        secret: N8N_WEBHOOK_SECRET,
+        secret,
         source: "jimusaku-lab.com",
         page: "contact",
         receivedAt: new Date().toISOString()
@@ -99,7 +106,7 @@ export const Contact: React.FC = () => {
             name: form.name,
             email: form.email,
             message: form.message,
-            secret: N8N_WEBHOOK_SECRET,
+            secret,
             source: "jimusaku-lab.com",
             page: "contact",
             receivedAt: new Date().toISOString()
