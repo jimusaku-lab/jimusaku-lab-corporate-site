@@ -103,7 +103,7 @@ const Header: React.FC = () => {
     className="flex items-center gap-4 group"
   >
     <img
-      src={import.meta.env.BASE_URL + 'logo.png'}
+      src={logo}
       alt="Jimusaku Lab Logo"
       className="h-12 md:h-14 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
     />
