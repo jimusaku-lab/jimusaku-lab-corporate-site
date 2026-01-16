@@ -32,15 +32,18 @@ export const Contact: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    console.log("[contact] submit start");
     if (status === "sending") {
       console.error("[contact] early return reason =", "status is already sending");
       return;
     }
 
+    const endpoint = CONTACT_ENDPOINT;
+    console.log("[contact] endpoint", endpoint);
+
     setStatus("sending");
     setErrorMessage("");
 
-    const endpoint = CONTACT_ENDPOINT;
     if (!endpoint) {
       setStatus("error");
       setErrorMessage("送信先URLが未設定です");
@@ -48,16 +51,19 @@ export const Contact: React.FC = () => {
       return;
     }
 
-    try {
-      const bodyParams = new URLSearchParams({
-        name: form.name,
-        email: form.email,
-        message: form.message,
-        source: "jimusaku-lab.com",
-        page: "contact",
-        receivedAt: new Date().toISOString()
-      });
+    const bodyParams = new URLSearchParams({
+      name: form.name,
+      email: form.email,
+      message: form.message,
+      source: "jimusaku-lab.com",
+      page: "contact",
+      receivedAt: new Date().toISOString()
+    });
 
+    let nextStatus: SubmitStatus = "error";
+
+    try {
+      console.log("[contact] before fetch");
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -65,13 +71,14 @@ export const Contact: React.FC = () => {
         },
         body: bodyParams
       });
+      console.log("[contact] after fetch", response.status);
 
       if (!response.ok) {
-      const responseText = await response.text();
-      throw new Error(`HTTP ${response.status} ${response.statusText}\n${responseText}`);
-    }
+        const responseText = await response.text();
+        throw new Error(`HTTP ${response.status} ${response.statusText}\n${responseText}`);
+      }
 
-      setStatus("success");
+      nextStatus = "success";
       setForm({
         name: "",
         email: "",
@@ -79,30 +86,10 @@ export const Contact: React.FC = () => {
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "送信に失敗しました";
-      try {
-        await fetch(endpoint, {
-          method: "POST",
-          mode: "no-cors",
-          body: new URLSearchParams({
-            name: form.name,
-            email: form.email,
-            message: form.message,
-            source: "jimusaku-lab.com",
-            page: "contact",
-            receivedAt: new Date().toISOString()
-          })
-        });
-        setStatus("success");
-        setErrorMessage(`Failed\n${endpoint}\n${message}\nno-cors fallback sent (response unreadable)`);
-        return;
-      } catch (fallbackError) {
-        const fallbackMessage = fallbackError instanceof Error
-          ? fallbackError.message
-          : "送信に失敗しました";
-        setStatus("error");
-        setErrorMessage(`Failed\n${endpoint}\n${message}\n${fallbackMessage}`);
-        return;
-      }
+      setErrorMessage(message);
+      nextStatus = "error";
+    } finally {
+      setStatus(nextStatus);
     }
   };
 
