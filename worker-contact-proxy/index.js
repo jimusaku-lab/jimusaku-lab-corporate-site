@@ -39,6 +39,10 @@ export default {
       console.log("[contact-proxy] missing N8N_WEBHOOK_URL");
       return jsonResponse({ ok: false, error: "Missing N8N_WEBHOOK_URL" }, { status: 500 });
     }
+    if (!env.CONTACT_PROXY_SECRET) {
+      console.log("[contact-proxy] missing CONTACT_PROXY_SECRET");
+      return jsonResponse({ ok: false, error: "Missing CONTACT_PROXY_SECRET" }, { status: 500 });
+    }
 
     let payload;
     try {
@@ -48,14 +52,29 @@ export default {
       return jsonResponse({ ok: false, error: "Invalid JSON body" }, { status: 400 });
     }
 
+    const patchedPayload = {
+      ...(typeof payload === "object" && payload !== null ? payload : {}),
+      secret: env.CONTACT_PROXY_SECRET,
+    };
+
+    const parseUpstreamBody = (text) => {
+      if (!text) return "";
+      try {
+        return JSON.parse(text);
+      } catch {
+        return text;
+      }
+    };
+
     try {
       console.log("[contact-proxy] forward start");
       const upstreamResponse = await fetch(env.N8N_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(patchedPayload),
       });
-      const upstreamBody = await upstreamResponse.text();
+      const upstreamBodyText = await upstreamResponse.text();
+      const upstreamBody = parseUpstreamBody(upstreamBodyText);
       console.log("[contact-proxy] forward done", upstreamResponse.status);
 
       if (!upstreamResponse.ok) {
@@ -63,7 +82,7 @@ export default {
           {
             ok: false,
             upstreamStatus: upstreamResponse.status,
-            error: upstreamBody || "Upstream request failed",
+            error: upstreamBodyText || "Upstream request failed",
           },
           { status: 502 }
         );
