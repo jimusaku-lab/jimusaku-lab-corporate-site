@@ -19,9 +19,9 @@ import { CompanyInfo, ServiceItem, NavItem, CaseStudy } from './types';
 export const COMPANY_INFO_JP: CompanyInfo = {
   name: "ジムサクラボ",
   englishName: "jimusaku lab, LLC",
-  representative: "代表社員　西出 麻子",
-  address: "〒143-0023 東京都大田区山王１丁目３１−１５ ツィンビル 301",
-  established: "2025年11月",
+  representative: "代表社員　伊沢 真心",
+  address: "〒143-0082 東京都大田区池上２丁目１９−１３",
+  established: "2026年1月",
   domain: "jimusaku-lab.com",
   email: "info@jimusaku-lab.com",
   businessItems: [
@@ -223,9 +223,9 @@ export const NAV_ITEMS_JP: NavItem[] = [
 export const COMPANY_INFO_EN: CompanyInfo = {
   name: "Jimusaku Lab",
   englishName: "jimusaku lab, LLC",
-  representative: "Asako Nishide, CEO",
-  address: "301 Twin Bldg, 1-31-15 Sanno, Ota-ku, Tokyo 143-0023",
-  established: "November 2025",
+  representative: "Makoto Izawa, CEO",
+  address: "2-19-13 Ikegami, Ota-ku, Tokyo 143-0082",
+  established: "January 2026",
   domain: "jimusaku-lab.com",
   email: "info@jimusaku-lab.com",
   businessItems: [
