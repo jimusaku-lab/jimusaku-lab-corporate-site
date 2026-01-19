@@ -23,7 +23,7 @@ export const COMPANY_INFO_JP: CompanyInfo = {
   address: "〒143-0082 東京都大田区池上２丁目１９−１３",
   established: "2026年1月",
   domain: "jimusaku-lab.com",
-  email: "info@jimusaku-lab.com",
+  email: "contact@jimusaku-lab.com",
   businessItems: [
     "AI秘書によるお仕事の簡素化",
     "あなた専用の業務システム開発",
@@ -227,7 +227,7 @@ export const COMPANY_INFO_EN: CompanyInfo = {
   address: "2-19-13 Ikegami, Ota-ku, Tokyo 143-0082",
   established: "January 2026",
   domain: "jimusaku-lab.com",
-  email: "info@jimusaku-lab.com",
+  email: "contact@jimusaku-lab.com",
   businessItems: [
     "Simplifying work with AI Secretaries",
     "Development of custom business systems",
