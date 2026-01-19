@@ -155,7 +155,12 @@ export const Contact: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="font-heading font-bold tracking-widest text-sm text-slate-400 mb-1">{t.contact.emailLabel}</h4>
-                  <p className="text-white font-english tracking-wide">{companyInfo.email}</p>
+                  <a
+                    className="text-white font-english tracking-wide hover:text-brand-200 transition-colors"
+                    href={`mailto:${companyInfo.email}`}
+                  >
+                    {companyInfo.email}
+                  </a>
                 </div>
               </div>
             </div>
