@@ -1,6 +1,7 @@
 import React from 'react';
 import { COMPANY_INFO_JP, COMPANY_INFO_EN, NAV_ITEMS_JP, NAV_ITEMS_EN, UI_TEXT } from '../constants';
 import { useLanguage } from './LanguageContext';
+import { buildNavHref } from '../utils/navigation';
 
 export const Footer: React.FC = () => {
   const { language } = useLanguage();
@@ -18,11 +19,13 @@ export const Footer: React.FC = () => {
           </div>
           <div className="flex flex-col md:flex-row gap-6 md:gap-10 text-sm font-light tracking-wide">
              {navItems.filter(item => item.path !== '#contact').map((item) => (
-               <a key={item.label} href={item.path === '/' ? item.hash : item.path + item.hash} className="hover:text-white transition-colors">
+               <a key={item.label} href={buildNavHref(item)} className="hover:text-white transition-colors">
                  {item.label}
                </a>
              ))}
-             <a href="#contact" className="hover:text-white transition-colors">{t.contact.label}</a>
+             <a href={buildNavHref({ label: 'contact', path: '/', hash: '#contact' })} className="hover:text-white transition-colors">
+               {t.contact.label}
+             </a>
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs font-light text-slate-600">

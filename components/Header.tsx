@@ -13,12 +13,15 @@ import {
 } from "../constants";
 
 import { useLanguage } from './LanguageContext';
+import { buildNavHref, getHashTargetId, getInternalPath, isExternalHref } from '../utils/navigation';
+import { NavItem } from '../types';
 
 // ヘッダー右上の CTA ボタン（デスクトップ / モバイル共通）
-const HeaderCta: React.FC<{ isHome: boolean }> = ({ isHome }) => {
+const HeaderCta: React.FC<{ onClick?: React.MouseEventHandler<HTMLAnchorElement> }> = ({ onClick }) => {
   return (
     <a
-      href={isHome ? '#contact' : '#contact'}
+      href={buildNavHref({ label: 'contact', path: '/', hash: '#contact' })}
+      onClick={onClick}
       className="ml-3 px-6 py-2.5 rounded-full text-sm font-heading font-bold tracking-wider transition-all shadow-[0_10px_25px_rgba(246,61,104,0.4)] hover:shadow-[0_15px_35px_rgba(246,61,104,0.6)] transform hover:-translate-y-0.5 flex items-center gap-2 bg-gradient-to-r from-brand-600 via-brand-500 to-brand-500 text-white border border-white/10"
     >
       <Mail size={16} />
@@ -39,10 +42,13 @@ const Header: React.FC = () => {
     (event: React.MouseEvent<HTMLAnchorElement>) => {
       event.preventDefault();
 
-      const targetId = hash.replace('#', '');
+      const targetId = getHashTargetId(hash);
 
       // その時点で DOM にある要素を毎回取り直す関数
       const scrollToTarget = () => {
+        if (!targetId) {
+          return;
+        }
         const target = document.getElementById(targetId);
         if (target) {
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -65,6 +71,40 @@ const Header: React.FC = () => {
       }
     };
 
+  const handleNavItemClick = (item: NavItem) =>
+    (event: React.MouseEvent<HTMLAnchorElement>) => {
+      const href = buildNavHref(item);
+      if (isExternalHref(href)) {
+        setIsMobileMenuOpen(false);
+        return;
+      }
+
+      event.preventDefault();
+      const targetPath = getInternalPath(item.path);
+      const targetId = getHashTargetId(item.hash);
+
+      const scrollToTarget = () => {
+        if (!targetId) {
+          return;
+        }
+        const target = document.getElementById(targetId);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      };
+
+      setIsMobileMenuOpen(false);
+
+      if (location.pathname !== targetPath) {
+        navigate(targetPath, { replace: false });
+        if (targetId) {
+          setTimeout(scrollToTarget, 150);
+        }
+      } else {
+        scrollToTarget();
+      }
+    };
+
 
   const navItems = language === 'ja' ? NAV_ITEMS_JP : NAV_ITEMS_EN;
   const companyInfo = language === 'ja' ? COMPANY_INFO_JP : COMPANY_INFO_EN;
@@ -83,7 +123,7 @@ const Header: React.FC = () => {
   }, []);
 
   // 「ホームかどうか」（CTA ボタンの文言などに利用）
-  const isHome = location.pathname === '/';
+  const logoItem = { label: 'Home', path: '/', hash: '#hero' };
 
   const headerBgClass = isScrolled
     ? 'bg-slate-950/80 backdrop-blur-md border-b border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.5)]'
@@ -98,8 +138,8 @@ const Header: React.FC = () => {
 {/* ロゴ部分 */}
 <div className="flex items-center">
   <Link
-    to="/"
-    onClick={handleNavClick('#hero')}   // ← これを追加
+    to={buildNavHref(logoItem)}
+    onClick={handleNavItemClick(logoItem)}
     className="flex items-center gap-4 group"
   >
     <img
@@ -119,11 +159,11 @@ const Header: React.FC = () => {
         {navItems
           // 「ご相談」は後で個別に書くので除外
           .filter((item: any) => item.hash !== '#contact')
-          .map((item: any) => (
+          .map((item: NavItem) => (
             <a
               key={item.label}
-              href={item.hash}
-              onClick={handleNavClick(item.hash)}
+              href={buildNavHref(item)}
+              onClick={handleNavItemClick(item)}
               className={`text-sm font-medium tracking-wider transition-all hover:text-brand-400 relative group ${textClass}`}
             >
               {item.label}
@@ -133,7 +173,7 @@ const Header: React.FC = () => {
 
         {/* ご相談だけは contact セクションに飛ばす */}
         <a
-          href="#contact"
+          href={buildNavHref({ label: 'contact', path: '/', hash: '#contact' })}
           onClick={handleNavClick('#contact')}
           className={`text-sm font-medium tracking-wider transition-all hover:text-brand-400 relative group ${textClass}`}
         >
@@ -180,11 +220,11 @@ const Header: React.FC = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-slate-950/95 backdrop-blur-xl border-t border-white/10 animate-fade-in shadow-2xl h-screen">
           <div className="flex flex-col py-4">
-            {navItems.map((item: any) => (
+            {navItems.map((item: NavItem) => (
               <a
                 key={item.label}
-                href={`${import.meta.env.BASE_URL}${item.path}${item.hash ?? ''}`}
-                onClick={handleNavClick}
+                href={buildNavHref(item)}
+                onClick={handleNavItemClick(item)}
                 className="px-8 py-3 text-lg text-slate-200 hover:bg-white/5 hover:text-brand-400 transition-all border-b border-white/5"
               >
                 {item.label}
@@ -216,7 +256,7 @@ const Header: React.FC = () => {
             </div>
 
             <div className="px-8 pb-6">
-              <HeaderCta isHome={isHome} />
+              <HeaderCta onClick={handleNavClick('#contact')} />
             </div>
           </div>
         </div>

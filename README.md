@@ -18,3 +18,15 @@ View your app in AI Studio: https://ai.studio/apps/drive/12PlQmycLWPBQe3WYt_JeI_
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## Verification (iOS Safari)
+
+1. Start the dev server:
+   `npm run dev`
+2. Open the top page on iOS Safari and tap the hamburger menu.
+3. Tap each menu item (Home / Services / Case Studies / Company / Consult).
+4. Confirm there is no "invalid address" alert and the page scrolls to the right section.
+
+## Build
+
+`npm run build`
