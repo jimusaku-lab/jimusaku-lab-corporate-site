@@ -4,6 +4,10 @@ import { HashRouter } from 'react-router-dom';
 import App from './App';
 import { LanguageProvider } from './components/LanguageContext';
 
+if ('scrollRestoration' in window.history) {
+  window.history.scrollRestoration = 'manual';
+}
+
 // ルート要素を取得
 const rootElement = document.getElementById('root');
 if (!rootElement) {

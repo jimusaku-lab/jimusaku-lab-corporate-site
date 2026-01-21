@@ -51,10 +51,16 @@ export const Contact: React.FC = () => {
 
     const start = performance.now();
     let rafId = 0;
+    let retryTimer = 0;
     const tryScroll = () => {
       const element = sectionRef.current ?? document.getElementById('contact');
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (performance.now() - start < 1000) {
+          retryTimer = window.setTimeout(() => {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 200);
+        }
         return;
       }
       if (performance.now() - start < 1000) {
@@ -62,7 +68,12 @@ export const Contact: React.FC = () => {
       }
     };
     rafId = requestAnimationFrame(tryScroll);
-    return () => cancelAnimationFrame(rafId);
+    return () => {
+      cancelAnimationFrame(rafId);
+      if (retryTimer) {
+        window.clearTimeout(retryTimer);
+      }
+    };
   }, [pathname, hash]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
