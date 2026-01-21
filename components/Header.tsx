@@ -16,11 +16,13 @@ import { useLanguage } from './LanguageContext';
 import { buildNavHref, getHashTargetId, getInternalPath, isExternalHref } from '../utils/navigation';
 import { NavItem } from '../types';
 
+const CONTACT_HASH_HREF = '/#/contact';
+
 // ヘッダー右上の CTA ボタン（デスクトップ / モバイル共通）
 const HeaderCta: React.FC<{ onClick?: React.MouseEventHandler<HTMLAnchorElement> }> = ({ onClick }) => {
   return (
     <a
-      href={buildNavHref({ label: 'contact', path: '/', hash: '#contact' })}
+      href={CONTACT_HASH_HREF}
       onClick={onClick}
       className="ml-3 px-6 py-2.5 rounded-full text-sm font-heading font-bold tracking-wider transition-all shadow-[0_10px_25px_rgba(246,61,104,0.4)] hover:shadow-[0_15px_35px_rgba(246,61,104,0.6)] transform hover:-translate-y-0.5 flex items-center gap-2 bg-gradient-to-r from-brand-600 via-brand-500 to-brand-500 text-white border border-white/10"
     >
@@ -43,6 +45,7 @@ const Header: React.FC = () => {
       event.preventDefault();
 
       const targetId = getHashTargetId(hash);
+      const contactPath = '/contact';
 
       // その時点で DOM にある要素を毎回取り直す関数
       const scrollToTarget = () => {
@@ -58,15 +61,11 @@ const Header: React.FC = () => {
       // モバイルメニューは閉じる
       setIsMobileMenuOpen(false);
 
-      // いまトップページ以外（サービス詳細など）にいる場合
-      if (location.pathname !== '/') {
-        // まずトップページへ戻る
-        navigate('/', { replace: false });
-
-        // ルーティングで画面が切り替わったあとにスクロール
+      if (location.pathname !== contactPath) {
+        // ルートを /contact に更新してURLを共有可能にする
+        navigate(contactPath, { replace: false });
         setTimeout(scrollToTarget, 150);
       } else {
-        // もともとトップページにいる場合は、そのままスクロールだけ
         scrollToTarget();
       }
     };
@@ -173,7 +172,7 @@ const Header: React.FC = () => {
 
         {/* ご相談だけは contact セクションに飛ばす */}
         <a
-          href={buildNavHref({ label: 'contact', path: '/', hash: '#contact' })}
+          href={CONTACT_HASH_HREF}
           onClick={handleNavClick('#contact')}
           className={`text-sm font-medium tracking-wider transition-all hover:text-brand-400 relative group ${textClass}`}
         >
@@ -220,16 +219,30 @@ const Header: React.FC = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-slate-950/95 backdrop-blur-xl border-t border-white/10 animate-fade-in shadow-2xl h-screen">
           <div className="flex flex-col py-4">
-            {navItems.map((item: NavItem) => (
-              <a
-                key={item.label}
-                href={buildNavHref(item)}
-                onClick={handleNavItemClick(item)}
-                className="px-8 py-3 text-lg text-slate-200 hover:bg-white/5 hover:text-brand-400 transition-all border-b border-white/5"
-              >
-                {item.label}
-              </a>
-            ))}
+            {navItems.map((item: NavItem) => {
+              if (item.hash === '#contact') {
+                return (
+                  <a
+                    key={item.label}
+                    href={CONTACT_HASH_HREF}
+                    onClick={handleNavClick('#contact')}
+                    className="px-8 py-3 text-lg text-slate-200 hover:bg-white/5 hover:text-brand-400 transition-all border-b border-white/5"
+                  >
+                    {item.label}
+                  </a>
+                );
+              }
+              return (
+                <a
+                  key={item.label}
+                  href={buildNavHref(item)}
+                  onClick={handleNavItemClick(item)}
+                  className="px-8 py-3 text-lg text-slate-200 hover:bg-white/5 hover:text-brand-400 transition-all border-b border-white/5"
+                >
+                  {item.label}
+                </a>
+              );
+            })}
 
             <div className="px-8 pb-6 pt-4 flex items-center gap-4">
               <span className="text-slate-400 text-sm">Language</span>

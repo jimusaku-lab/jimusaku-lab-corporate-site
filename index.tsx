@@ -10,6 +10,10 @@ if (!rootElement) {
   throw new Error('Could not find root element to mount to');
 }
 
+if (window.location.hash === '#contact') {
+  window.location.hash = '#/contact';
+}
+
 // React 18 の createRoot
 const root = ReactDOM.createRoot(rootElement);
 

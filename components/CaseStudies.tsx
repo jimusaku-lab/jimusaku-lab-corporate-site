@@ -176,7 +176,7 @@ export const CaseStudies: React.FC = () => {
         
         {/* CTA Card at the end */}
         <div className="min-w-[85vw] md:min-w-[350px] snap-center flex items-center justify-center">
-           <a href="#contact" className="group relative w-full max-w-sm aspect-[4/5] bg-gradient-to-br from-brand-900/20 to-slate-900 rounded-3xl border border-brand-500/30 flex flex-col items-center justify-center text-center p-8 hover:scale-105 transition-transform duration-500 cursor-pointer shadow-[0_0_50px_rgba(246,61,104,0.2)] backdrop-blur-md">
+           <a href="/#/contact" className="group relative w-full max-w-sm aspect-[4/5] bg-gradient-to-br from-brand-900/20 to-slate-900 rounded-3xl border border-brand-500/30 flex flex-col items-center justify-center text-center p-8 hover:scale-105 transition-transform duration-500 cursor-pointer shadow-[0_0_50px_rgba(246,61,104,0.2)] backdrop-blur-md">
               <div className="w-20 h-20 bg-brand-600 rounded-full flex items-center justify-center text-white mb-6 shadow-[0_0_30px_rgba(246,61,104,0.6)] group-hover:animate-pulse">
                 <ArrowRight size={32} />
               </div>

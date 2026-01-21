@@ -23,7 +23,7 @@ export const Footer: React.FC = () => {
                  {item.label}
                </a>
              ))}
-             <a href={buildNavHref({ label: 'contact', path: '/', hash: '#contact' })} className="hover:text-white transition-colors">
+             <a href="/#/contact" className="hover:text-white transition-colors">
                {t.contact.label}
              </a>
           </div>

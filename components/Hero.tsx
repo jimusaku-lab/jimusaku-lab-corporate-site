@@ -135,14 +135,14 @@ export const Hero: React.FC = () => {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row justify-center gap-6 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
           <a 
-            href="#contact" 
+            href="/#/contact" 
             className="px-10 py-5 rounded-full bg-gradient-to-r from-brand-600 to-brand-500 text-white font-heading font-bold tracking-widest text-base hover:to-brand-400 transition-all shadow-[0_0_30px_rgba(246,61,104,0.3)] hover:shadow-[0_0_50px_rgba(246,61,104,0.5)] transform hover:-translate-y-1 border border-white/10 flex items-center justify-center gap-3 group"
           >
             {t.hero.btnMain}
             <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
           </a>
           <a 
-            href="#contact" 
+            href="/#/contact" 
             className="px-10 py-5 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-heading font-bold tracking-widest text-base hover:bg-slate-800 transition-all shadow-lg border border-slate-700 hover:border-brand-500/50 flex items-center justify-center gap-3 group"
           >
             <MessageSquare size={20} className="text-slate-400 group-hover:text-brand-400 transition-colors" />

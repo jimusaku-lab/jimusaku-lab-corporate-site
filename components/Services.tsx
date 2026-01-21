@@ -113,7 +113,7 @@ export const Services: React.FC = () => {
         <div className="text-center relative">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[100px] bg-brand-500/10 blur-[80px] pointer-events-none"></div>
           <a 
-            href="#contact"
+            href="/#/contact"
             className="relative inline-flex items-center gap-3 px-12 py-5 rounded-full bg-slate-900 text-white font-heading font-bold tracking-widest text-sm hover:bg-slate-800 transition-all shadow-lg transform hover:-translate-y-1 border border-slate-700 hover:border-brand-500/50 overflow-hidden group"
           >
             <span className="relative z-10 flex items-center gap-3">

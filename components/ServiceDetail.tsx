@@ -240,7 +240,7 @@ export const ServiceDetail: React.FC = () => {
                   {service.title}{t.detail.consultBoxDesc}
                 </p>
                 <Link 
-                  to="/#contact" 
+                  to="/contact" 
                   className="block w-full bg-brand-600 text-white text-center py-4 rounded-xl font-heading font-bold tracking-widest hover:bg-brand-500 transition-all shadow-[0_0_20px_rgba(246,61,104,0.4)] hover:-translate-y-1 relative z-10"
                 >
                   {t.detail.consultBtn}

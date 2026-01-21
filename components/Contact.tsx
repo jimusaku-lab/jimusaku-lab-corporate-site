@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Mail, MapPin, Send, MessageSquare } from 'lucide-react';
 import { COMPANY_INFO_JP, COMPANY_INFO_EN, UI_TEXT } from '../constants';
 import { useLanguage } from './LanguageContext';
 
 export const Contact: React.FC = () => {
   const { language } = useLanguage();
+  const { pathname, hash } = useLocation();
   const companyInfo = language === 'ja' ? COMPANY_INFO_JP : COMPANY_INFO_EN;
   const t = UI_TEXT[language];
   const CONTACT_ENDPOINT = import.meta.env.VITE_CONTACT_ENDPOINT as string;
@@ -26,6 +28,7 @@ export const Contact: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
   const successTimeoutRef = useRef<number | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     return () => {
@@ -34,6 +37,33 @@ export const Contact: React.FC = () => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    const rawHash = window.location.hash;
+    const shouldScroll = hash === '#contact'
+      || rawHash === '#contact'
+      || rawHash === '#/contact'
+      || pathname === '/contact';
+
+    if (!shouldScroll) {
+      return;
+    }
+
+    const start = performance.now();
+    let rafId = 0;
+    const tryScroll = () => {
+      const element = sectionRef.current ?? document.getElementById('contact');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+      if (performance.now() - start < 1000) {
+        rafId = requestAnimationFrame(tryScroll);
+      }
+    };
+    rafId = requestAnimationFrame(tryScroll);
+    return () => cancelAnimationFrame(rafId);
+  }, [pathname, hash]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -122,7 +152,7 @@ export const Contact: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="py-32 bg-slate-950 text-white relative overflow-hidden border-t border-slate-900">
+    <section ref={sectionRef} id="contact" className="py-32 bg-slate-950 text-white relative overflow-hidden border-t border-slate-900">
       {/* Decorative Elements */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-brand-900/10 via-slate-950 to-slate-950"></div>
       
