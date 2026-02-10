@@ -1,0 +1,229 @@
+{
+  "name": "Web Inquiry to Slack",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "web-inquiry",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "d6adbd22-ad1a-4bc9-87e0-e6c1572ac809",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        112
+      ],
+      "webhookId": "f10ac492-ae72-4a54-8250-13e9993c6efe"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "9f9d0b70-a75b-4204-9a9b-ce5e2e6f3ad2",
+              "leftValue": "={{$json.body.secret}}",
+              "rightValue": "jimusaku_contact_proxy_20260116_x7Kp9Q2mV4aN8fR1",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ccdd3b59-517e-41a9-8f4f-e3971e29e19c",
+      "name": "Check Secret REPLACE_ME",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "slackText",
+              "value": "={{\"New web inquiry\\nName: \" + ($json.body.name || \"\") + \"\\nEmail: \" + ($json.body.email || \"\") + \"\\nMessage: \" + (($json.body.message || \"\").slice(0, 1000)) + \"\\nSource: \" + ($json.body.source || \"\") + \"\\nPage: \" + ($json.body.page || \"\") + \"\\nReceivedAt: \" + $now.toISO()}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5388185c-fb05-4843-8a11-103fdc6512fd",
+      "name": "Build Slack Text",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "REPLACE_ME_SLACK_WEBHOOK_URL
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{$json.slackText}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "312628ef-c150-4e14-9153-87f9aee2a483",
+      "name": "Post to Slack REPLACE_ME",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "contact@jimusaku-lab.sakura.ne.jp",
+        "toEmail": "={{$json.body.email}}",
+        "subject": "【ジムサクラボ】お問い合わせありがとうございます（受付完了）",
+        "emailFormat": "html",
+        "html": "=<p>{{$json.body.name}} 様</p>\n<p>このたびはお問い合わせいただき、誠にありがとうございます。以下の内容で確かに承りました。</p>\n<p>お名前：{{$json.body.name}}<br>\nメールアドレス：{{$json.body.email}}<br>\nお問い合わせ内容：{{$json.body.message}}<br>\n受付日時：{{$json.body.receivedAt}}</p>\n<p>1営業日以内に担当よりご連絡いたしますので、今しばらくお待ちください。</p>\n<p>今後ともジムサクラボをよろしくお願いいたします。</p>"
+      },
+      "id": "4af7a36b-78a6-4ab7-98b6-f4b79a441039",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        336,
+        0
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "SMTP account",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "c4d8629e-27eb-45b6-b360-3281d5f78960",
+      "name": "Respond 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "81a5ffef-f533-4010-a5e2-d48694df0db7",
+      "name": "Respond 401 REPLACE_ME_SECRET",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        224
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check Secret REPLACE_ME",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Secret REPLACE_ME": {
+      "main": [
+        [
+          {
+            "node": "Build Slack Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond 401 REPLACE_ME_SECRET",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Slack Text": {
+      "main": [
+        [
+          {
+            "node": "Post to Slack REPLACE_ME",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post to Slack REPLACE_ME": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Respond 200",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "427e0d6f-4d92-453e-a921-bdaa76b569eb",
+  "meta": {
+    "instanceId": "631c7f176617d70d85bce4c92f9a4c745472e1b5f83cc6180070ce6fa07af873"
+  },
+  "id": "cfjFl_boTP5-gsemrGl3V",
+  "tags": []
+}

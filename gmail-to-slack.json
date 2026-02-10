@@ -1,0 +1,158 @@
+{
+  "name": "Gmail to Slack",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "name": "Gmail Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1,
+      "position": [
+        48,
+        48
+      ],
+      "id": "2cbfd043-948f-4039-ae89-4d048dd1390d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "v89bYhAOE5AX9IX3",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": "gpt-4o-mini",
+        "prompt": {
+          "messages": [
+            {
+              "role": "system",
+              "content": "以下のメールを日本語で要約して、次アクションを提案して。"
+            },
+            {
+              "content": "=件名: {{$node[\"Gmail Trigger\"].json.subject || \"\"}}\n送信者: {{$node[\"Gmail Trigger\"].json.from || \"\"}}\n\n本文(snippet):\n{{$node[\"Gmail Trigger\"].json.snippet}}\n"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "name": "OpenAI Chat",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        336,
+        48
+      ],
+      "id": "e21f5d1a-5003-4062-bc56-539d9c53ae2a",
+      "credentials": {
+        "openAiApi": {
+          "id": "OxgDdaW6CP1Id7Rz",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toEmail": "={{$node[\"Gmail Trigger\"].json.from.value[0].address}}",
+        "subject": "【ジムサクラボ】お問い合わせありがとうございます（受付完了）",
+        "text": "=以下のお問い合わせを確かに承りました。\n受付日時：{{ $now }}\n受領件名：{{ $json.subject || $json.headers?.subject || \"\" }}\n受領内容：{{ $json.textPlain || $json.snippet || \"\" }}\n返信目安：1営業日以内にご連絡します。"
+      },
+      "name": "Email Send",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        432,
+        48
+      ],
+      "id": "b546d2e0-9c1a-4185-9a3a-58d2be158f73",
+      "credentials": {
+        "smtp": {
+          "id": "SMTP_GMAIL_APP_PASSWORD",
+          "name": "SMTP_GMAIL_APP_PASSWORD"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "REPLACE_ME_SLACK_WEBHOOK_URL
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{$json.message.content}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        544,
+        48
+      ],
+      "id": "b27adabf-b328-42d4-96fb-f6a7e9b50fa9",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "OpenAI Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat": {
+      "main": [
+        [
+          {
+            "node": "Email Send",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Send": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "8a44542c-7370-4563-bfff-4fa0b7c6bacd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "631c7f176617d70d85bce4c92f9a4c745472e1b5f83cc6180070ce6fa07af873"
+  },
+  "id": "KOqVtfLsh_HJke5S5GypE",
+  "tags": []
+}
