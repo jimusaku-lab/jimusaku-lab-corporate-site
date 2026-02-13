@@ -1,8 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
+import './styles/theme.css';
 import App from './App';
 import { LanguageProvider } from './components/LanguageContext';
+
+const queryTheme = new URLSearchParams(window.location.search).get('theme');
+document.documentElement.dataset.theme = queryTheme === 'alt' ? 'alt' : 'default';
 
 if ('scrollRestoration' in window.history) {
   window.history.scrollRestoration = 'manual';

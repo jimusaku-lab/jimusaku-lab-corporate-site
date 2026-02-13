@@ -41,24 +41,24 @@ export const Hero: React.FC = () => {
             100% { transform: translateY(200%) scale(0); opacity: 0; }
           }
           @keyframes pulse-node {
-            0%, 100% { box-shadow: 0 0 20px rgba(246, 61, 104, 0.2); background-color: rgba(15, 23, 42, 0.9); }
-            50% { box-shadow: 0 0 40px rgba(246, 61, 104, 0.6); background-color: rgba(30, 41, 59, 0.9); }
+            0%, 100% { box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.2); background-color: rgba(15, 23, 42, 0.9); }
+            50% { box-shadow: 0 0 40px rgba(var(--primary-rgb), 0.6); background-color: rgba(30, 41, 59, 0.9); }
           }
           
           .packet-h {
             position: absolute;
             height: 2px;
             width: 80px;
-            background: linear-gradient(90deg, transparent, #f63d68, #fff, transparent);
-            box-shadow: 0 0 10px #f63d68;
+            background: linear-gradient(90deg, transparent, var(--primary), var(--primary-contrast), transparent);
+            box-shadow: 0 0 10px var(--primary);
             animation: travel-x 3s infinite linear;
           }
           .packet-v {
             position: absolute;
             width: 2px;
             height: 80px;
-            background: linear-gradient(180deg, transparent, #f63d68, #fff, transparent);
-            box-shadow: 0 0 10px #f63d68;
+            background: linear-gradient(180deg, transparent, var(--primary), var(--primary-contrast), transparent);
+            box-shadow: 0 0 10px var(--primary);
             animation: travel-y 4s infinite linear;
           }
           .floating-node {
@@ -105,7 +105,7 @@ export const Hero: React.FC = () => {
         </div>
         
         {/* Vignette Overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(transparent_20%,#020617_90%)] z-0"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(transparent_20%,var(--bg)_90%)] z-0"></div>
       </div>
 
       {/* --- Foreground Content --- */}
@@ -143,9 +143,9 @@ export const Hero: React.FC = () => {
           </a>
           <a 
             href="/#/contact" 
-            className="px-10 py-5 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-heading font-bold tracking-widest text-base hover:bg-slate-800 transition-all shadow-lg border border-slate-700 hover:border-brand-500/50 flex items-center justify-center gap-3 group"
+            className="highlight-cta px-10 py-5 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-heading font-bold tracking-widest text-base hover:bg-slate-800 transition-all shadow-lg border border-slate-700 hover:border-brand-500/50 flex items-center justify-center gap-3 group"
           >
-            <MessageSquare size={20} className="text-slate-400 group-hover:text-brand-400 transition-colors" />
+            <MessageSquare size={20} className="highlight-cta-icon text-slate-400 group-hover:text-brand-400 transition-colors" />
             {t.hero.btnSub}
           </a>
         </div>

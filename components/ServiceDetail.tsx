@@ -66,16 +66,16 @@ export const ServiceDetail: React.FC = () => {
               position: absolute;
               height: 3px;
               width: 100px;
-              background: linear-gradient(90deg, transparent, #f63d68, #fff, transparent);
-              box-shadow: 0 0 20px #f63d68;
+              background: linear-gradient(90deg, transparent, var(--primary), var(--primary-contrast), transparent);
+              box-shadow: 0 0 20px var(--primary);
               animation: travel-x 3s infinite linear;
             }
             .packet-v {
               position: absolute;
               width: 3px;
               height: 100px;
-              background: linear-gradient(180deg, transparent, #f63d68, #fff, transparent);
-              box-shadow: 0 0 20px #f63d68;
+              background: linear-gradient(180deg, transparent, var(--primary), var(--primary-contrast), transparent);
+              box-shadow: 0 0 20px var(--primary);
               animation: travel-y 4s infinite linear;
             }
           `}</style>
@@ -102,7 +102,7 @@ export const ServiceDetail: React.FC = () => {
           </div>
           
           {/* Lighter Vignette Only */}
-          <div className="absolute inset-0 bg-[radial-gradient(transparent_40%,#020617_100%)] z-0"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(transparent_40%,var(--bg)_100%)] z-0"></div>
         </div>
         
         {/* Content */}
