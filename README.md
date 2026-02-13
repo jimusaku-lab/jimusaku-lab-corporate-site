@@ -31,7 +31,7 @@ View your app in AI Studio: https://ai.studio/apps/drive/12PlQmycLWPBQe3WYt_JeI_
 
 `npm run build`
 
-Theme: add ?theme=alt to enable the alt color theme.
+Theme: `alt` is the default; add `?theme=default` to switch back to the old theme.
 
 ## Deploy (GitHub Pages)
 

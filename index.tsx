@@ -6,7 +6,7 @@ import App from './App';
 import { LanguageProvider } from './components/LanguageContext';
 
 const queryTheme = new URLSearchParams(window.location.search).get('theme');
-document.documentElement.dataset.theme = queryTheme === 'alt' ? 'alt' : 'default';
+document.documentElement.dataset.theme = queryTheme === 'default' ? 'default' : 'alt';
 
 if ('scrollRestoration' in window.history) {
   window.history.scrollRestoration = 'manual';
