@@ -52,8 +52,8 @@ export const CaseStudies: React.FC = () => {
             position: absolute;
             width: 4px;
             height: 250px;
-            background: linear-gradient(180deg, transparent, #f63d68, #ffffff, transparent);
-            box-shadow: 0 0 30px #f63d68, 0 0 10px #f63d68;
+            background: linear-gradient(180deg, transparent, var(--primary), var(--primary-contrast), transparent);
+            box-shadow: 0 0 30px var(--primary), 0 0 10px var(--primary);
             animation: flow-v 4s infinite linear;
           }
         `}</style>
@@ -75,7 +75,7 @@ export const CaseStudies: React.FC = () => {
            </div>
         </div>
         {/* Reduced vignette opacity for better visibility */}
-        <div className="absolute inset-0 bg-[radial-gradient(transparent_30%,#020617_95%)] z-0"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(transparent_30%,var(--bg)_95%)] z-0"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 relative z-10">
@@ -96,14 +96,14 @@ export const CaseStudies: React.FC = () => {
           <div className="flex gap-4 relative z-10">
             <button 
               onClick={() => scroll('left')} 
-              className="group p-4 rounded-full bg-slate-900/80 border border-slate-700 text-white hover:bg-slate-800 hover:border-brand-500 transition-all shadow-lg hover:shadow-[0_0_15px_rgba(246,61,104,0.3)] backdrop-blur-md"
+              className="highlight-card group p-4 rounded-full bg-slate-900/80 border border-slate-700 text-white hover:bg-slate-800 hover:border-brand-500 transition-all shadow-lg hover:shadow-[0_0_15px_rgba(246,61,104,0.3)] backdrop-blur-md"
               aria-label="Previous Case"
             >
               <ChevronLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
             </button>
             <button 
               onClick={() => scroll('right')}
-              className="group p-4 rounded-full bg-slate-900/80 border border-slate-700 text-white hover:bg-slate-800 hover:border-brand-500 transition-all shadow-lg hover:shadow-[0_0_15px_rgba(246,61,104,0.3)] backdrop-blur-md"
+              className="highlight-card group p-4 rounded-full bg-slate-900/80 border border-slate-700 text-white hover:bg-slate-800 hover:border-brand-500 transition-all shadow-lg hover:shadow-[0_0_15px_rgba(246,61,104,0.3)] backdrop-blur-md"
               aria-label="Next Case"
             >
               <ChevronRight size={24} className="group-hover:translate-x-1 transition-transform" />
@@ -121,7 +121,7 @@ export const CaseStudies: React.FC = () => {
         {caseStudies.map((study, index) => (
           <div 
             key={index} 
-            className="min-w-[85vw] md:min-w-[500px] max-w-[600px] snap-center group relative bg-slate-900 rounded-3xl overflow-hidden border border-slate-800 hover:border-brand-500/50 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col h-full"
+            className="highlight-card min-w-[85vw] md:min-w-[500px] max-w-[600px] snap-center group relative bg-slate-900 rounded-3xl overflow-hidden border border-slate-800 hover:border-brand-500/50 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col h-full"
           >
             {/* Image Area - Top Half (Visible) */}
             <div className="h-56 sm:h-64 w-full relative shrink-0 bg-slate-800">

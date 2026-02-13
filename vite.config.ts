@@ -5,10 +5,16 @@ import react from '@vitejs/plugin-react';
 // Vite の設定
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1] ?? '';
+  const basePath =
+    env.VITE_BASE_PATH ||
+    (env.VITE_USE_REPO_BASE === 'true' && repoName ? `/${repoName}/` : '/');
 
   return {
-    // ⭐ GitHub Pages 用の base（ここが一番大事）
-    base: '/',
+    // GitHub Pages base path:
+    // - custom domain: "/"
+    // - repo path: set VITE_BASE_PATH or VITE_USE_REPO_BASE=true
+    base: basePath,
 
     server: {
       port: 3000,

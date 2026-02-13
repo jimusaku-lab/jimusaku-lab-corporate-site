@@ -38,8 +38,8 @@ export const Services: React.FC = () => {
             position: absolute;
             height: 2px;
             width: 150px;
-            background: linear-gradient(90deg, transparent, #f63d68, #fff, transparent);
-            box-shadow: 0 0 15px #f63d68;
+            background: linear-gradient(90deg, transparent, var(--primary), var(--primary-contrast), transparent);
+            box-shadow: 0 0 15px var(--primary);
             animation: flow-h 5s infinite linear;
           }
         `}</style>
@@ -61,7 +61,7 @@ export const Services: React.FC = () => {
            </div>
         </div>
         {/* Very light vignette to not obscure animation */}
-        <div className="absolute inset-0 bg-[radial-gradient(transparent_30%,#020617_95%)] z-0"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(transparent_30%,var(--bg)_95%)] z-0"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -85,14 +85,14 @@ export const Services: React.FC = () => {
             <Link 
               key={index} 
               to={`/services/${service.id}`}
-              className="group relative bg-slate-900/80 backdrop-blur-md rounded-2xl p-1 overflow-hidden hover:-translate-y-2 transition-all duration-500 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)] border border-slate-800 hover:border-brand-500/50"
+              className="highlight-card group relative bg-slate-900/80 backdrop-blur-md rounded-2xl p-1 overflow-hidden hover:-translate-y-2 transition-all duration-500 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)] border border-slate-800 hover:border-brand-500/50"
             >
               {/* Glowing Border Gradient */}
               <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-50 rounded-2xl pointer-events-none"></div>
 
               <div className="relative bg-slate-950/80 h-full rounded-xl p-8 flex flex-col z-10">
                 {/* Icon */}
-                <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-700 flex items-center justify-center text-brand-400 group-hover:text-white group-hover:bg-brand-500 group-hover:scale-110 transition-all duration-300 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] mb-8">
+                <div className="service-card-icon w-16 h-16 rounded-2xl bg-slate-900 border border-slate-700 flex items-center justify-center text-brand-400 group-hover:scale-110 transition-all duration-300 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] mb-8">
                   <service.icon size={32} strokeWidth={1.5} />
                 </div>
                 
@@ -114,7 +114,7 @@ export const Services: React.FC = () => {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[100px] bg-brand-500/10 blur-[80px] pointer-events-none"></div>
           <a 
             href="/#/contact"
-            className="relative inline-flex items-center gap-3 px-12 py-5 rounded-full bg-slate-900 text-white font-heading font-bold tracking-widest text-sm hover:bg-slate-800 transition-all shadow-lg transform hover:-translate-y-1 border border-slate-700 hover:border-brand-500/50 overflow-hidden group"
+            className="cta-pill relative inline-flex items-center gap-3 px-12 py-5 rounded-full bg-slate-900 text-white font-heading font-bold tracking-widest text-sm hover:bg-slate-800 transition-all shadow-lg transform hover:-translate-y-1 border border-slate-700 hover:border-brand-500/50 overflow-hidden group"
           >
             <span className="relative z-10 flex items-center gap-3">
                <Mail size={18} className="text-brand-500 group-hover:text-brand-400" />
