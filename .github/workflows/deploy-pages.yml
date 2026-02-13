@@ -2,7 +2,9 @@ name: Deploy Vite dist to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - theme-alt
   workflow_dispatch:
 
 permissions:
@@ -17,20 +19,28 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # For custom domains keep "/" (default). For /<repo>/ set repo variable VITE_BASE_PATH.
+      VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH != '' && vars.VITE_BASE_PATH || '/' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-      - name: Install deps
+
+      - name: Install dependencies
         run: npm ci
+
       - name: Build
         run: npm run build
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

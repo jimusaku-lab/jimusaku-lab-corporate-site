@@ -32,3 +32,8 @@ View your app in AI Studio: https://ai.studio/apps/drive/12PlQmycLWPBQe3WYt_JeI_
 `npm run build`
 
 Theme: add ?theme=alt to enable the alt color theme.
+
+## Deploy (GitHub Pages)
+
+GitHub Pages is deployed by GitHub Actions (`.github/workflows/deploy-pages.yml`) from `dist/` on push (`main` / `theme-alt`).
+Manual `docs/` sync is no longer required.
