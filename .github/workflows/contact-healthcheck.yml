@@ -1,0 +1,20 @@
+name: Contact Form Healthcheck
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  healthcheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check contact form dependencies
+        run: ./scripts/contact-healthcheck.sh

@@ -49,3 +49,13 @@ Required deploy settings:
 - Cloudflare Worker secret: `CONTACT_PROXY_SECRET`
 
 `N8N_CONTACT_WEBHOOK_URL` / `N8N_WEBHOOK_URL` はn8nのProduction Webhook URLを設定します。`/webhook-test/`、`localhost`、`127.0.0.1`、`192.168.*` などのローカルURLは本番用として使いません。
+
+## Contact Healthcheck
+
+GitHub Actionsの `Contact Form Healthcheck` が15分ごとに以下を確認します。
+
+- `https://n8n-admin.jimusaku-lab.com/signin` がHTTP 200を返すこと
+- n8n Production Webhookが存在し、secretなしPOSTをHTTP 401で拒否すること
+- `contact-proxy` がLPからのCORS preflightにHTTP 204で応答すること
+
+この監視はSlackへテスト問い合わせを流さないため、実際の通知本文までは送信しません。失敗した場合はGitHub Actionsのrunが赤になり、GitHub通知設定に従ってメール/通知が届きます。
