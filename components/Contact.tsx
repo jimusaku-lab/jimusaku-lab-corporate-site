@@ -10,6 +10,7 @@ export const Contact: React.FC = () => {
   const companyInfo = language === 'ja' ? COMPANY_INFO_JP : COMPANY_INFO_EN;
   const t = UI_TEXT[language];
   const CONTACT_ENDPOINT = import.meta.env.VITE_CONTACT_ENDPOINT as string;
+  const GENERIC_ERROR_MESSAGE = "送信に失敗しました。時間をおいて再度お試しください。";
 
   type FormState = {
     name: string;
@@ -90,7 +91,6 @@ export const Contact: React.FC = () => {
     }
 
     const endpoint = CONTACT_ENDPOINT;
-    console.log("[contact] endpoint", endpoint);
 
     setStatus("sending");
     setErrorMessage("");
@@ -98,7 +98,7 @@ export const Contact: React.FC = () => {
 
     if (!endpoint) {
       setStatus("error");
-      setErrorMessage("送信先URLが未設定です");
+      setErrorMessage(GENERIC_ERROR_MESSAGE);
       console.error("[contact] early return reason =", "contact endpoint is missing");
       return;
     }
@@ -135,7 +135,11 @@ export const Contact: React.FC = () => {
         }
       }
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status} ${response.statusText}\n${responseText}`);
+        console.error("[contact] submit failed", {
+          status: response.status,
+          statusText: response.statusText,
+        });
+        throw new Error("Contact request failed");
       }
 
       setForm({
@@ -146,8 +150,8 @@ export const Contact: React.FC = () => {
       setSuccessMessage(parsedBody?.message || (trimmedText === "OK" ? "Sent" : "Sent"));
       nextStatus = "success";
     } catch (error) {
-      const message = error instanceof Error ? error.message : "送信に失敗しました";
-      setErrorMessage(message);
+      console.error("[contact] submit error", error);
+      setErrorMessage(GENERIC_ERROR_MESSAGE);
       nextStatus = "error";
     } finally {
       setStatus(nextStatus);
@@ -263,7 +267,7 @@ export const Contact: React.FC = () => {
                 <p className="text-sm text-emerald-400 whitespace-pre-line">{successMessage || "Sent"}</p>
               )}
               {status === "error" && (
-                <p className="text-sm text-red-400 whitespace-pre-line">Failed{errorMessage ? `\n${errorMessage}` : ""}</p>
+                <p className="text-sm text-red-400 whitespace-pre-line">{errorMessage || GENERIC_ERROR_MESSAGE}</p>
               )}
             </form>
           </div>

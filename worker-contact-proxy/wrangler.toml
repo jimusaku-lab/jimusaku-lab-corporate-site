@@ -3,5 +3,5 @@ main = "index.js"
 compatibility_date = "2025-01-01"
 
 # Required secrets (set via `wrangler secret put`):
-# - N8N_WEBHOOK_URL
+# - N8N_CONTACT_WEBHOOK_URL (preferred) or N8N_WEBHOOK_URL (legacy)
 # - CONTACT_PROXY_SECRET

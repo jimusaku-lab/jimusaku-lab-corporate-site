@@ -4,7 +4,7 @@ set -euo pipefail
 # Usage:
 #   ./test-webhook.sh BASE_URL SECRET
 # Example:
-#   ./test-webhook.sh "https://your-n8n-domain/webhook-test/web-inquiry" "REPLACE_ME_SECRET"
+#   ./test-webhook.sh "https://your-n8n-domain/webhook/web-inquiry" "REPLACE_ME_SECRET"
 
 BASE_URL=${1:-}
 SECRET=${2:-}

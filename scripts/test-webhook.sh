@@ -2,11 +2,11 @@
 set -euo pipefail
 
 # Usage:
-#   WEBHOOK_URL="https://your-n8n-domain/webhook-test/..." \
-#   SECRET="jimusaku_contact_proxy_20260116_x7Kp9Q2mV4aN8fR1" \
+#   WEBHOOK_URL="https://your-n8n-domain/webhook/web-inquiry" \
+#   SECRET="replace_me" \
 #   ./scripts/test-webhook.sh
 
-: "${WEBHOOK_URL:?Set WEBHOOK_URL to the n8n test webhook URL}"
+: "${WEBHOOK_URL:?Set WEBHOOK_URL to the n8n Production Webhook URL}"
 : "${SECRET:?Set SECRET to match the workflow's secret check}"
 
 now_iso=$(date -u +"%Y-%m-%dT%H:%M:%SZ")

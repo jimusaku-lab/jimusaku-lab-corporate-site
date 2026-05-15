@@ -4,6 +4,7 @@ export default {
     const allowedOrigin = "https://jimusaku-lab.com";
     const isAllowedOrigin = !origin || origin === allowedOrigin;
     const corsOrigin = allowedOrigin;
+    const genericUpstreamError = "送信に失敗しました。時間をおいて再度お試しください。";
     const jsonResponse = (data, { status = 200 } = {}) => {
       return new Response(JSON.stringify(data), {
         status,
@@ -12,6 +13,25 @@ export default {
           "Access-Control-Allow-Origin": corsOrigin,
         },
       });
+    };
+    const getWebhookUrl = () => env.N8N_CONTACT_WEBHOOK_URL || env.N8N_WEBHOOK_URL;
+    const getSafeUrlInfo = (value) => {
+      try {
+        const url = new URL(value);
+        return {
+          hostname: url.hostname,
+          protocol: url.protocol,
+          isTestWebhook: url.pathname.includes("/webhook-test/"),
+          isLocalHostname: ["localhost", "127.0.0.1", "0.0.0.0"].includes(url.hostname),
+          isPrivateLan: /^192\.168\.|^10\.|^172\.(1[6-9]|2\d|3[0-1])\./.test(url.hostname),
+        };
+      } catch {
+        return null;
+      }
+    };
+    const summarizeBody = (text) => {
+      if (!text) return "";
+      return text.slice(0, 500);
     };
 
     if (request.method === "OPTIONS") {
@@ -35,13 +55,25 @@ export default {
       return jsonResponse({ ok: false, error: "Origin not allowed" }, { status: 403 });
     }
 
-    if (!env.N8N_WEBHOOK_URL) {
-      console.log("[contact-proxy] missing N8N_WEBHOOK_URL");
-      return jsonResponse({ ok: false, error: "Missing N8N_WEBHOOK_URL" }, { status: 500 });
+    const webhookUrl = getWebhookUrl();
+    if (!webhookUrl) {
+      console.log("[contact-proxy] missing webhook URL env", {
+        acceptedEnvNames: ["N8N_CONTACT_WEBHOOK_URL", "N8N_WEBHOOK_URL"],
+      });
+      return jsonResponse({ ok: false, error: genericUpstreamError }, { status: 500 });
+    }
+    const webhookUrlInfo = getSafeUrlInfo(webhookUrl);
+    if (!webhookUrlInfo) {
+      console.log("[contact-proxy] invalid webhook URL env");
+      return jsonResponse({ ok: false, error: genericUpstreamError }, { status: 500 });
+    }
+    if (webhookUrlInfo.protocol !== "https:" || webhookUrlInfo.isTestWebhook || webhookUrlInfo.isLocalHostname || webhookUrlInfo.isPrivateLan) {
+      console.log("[contact-proxy] rejected webhook URL", webhookUrlInfo);
+      return jsonResponse({ ok: false, error: genericUpstreamError }, { status: 500 });
     }
     if (!env.CONTACT_PROXY_SECRET) {
       console.log("[contact-proxy] missing CONTACT_PROXY_SECRET");
-      return jsonResponse({ ok: false, error: "Missing CONTACT_PROXY_SECRET" }, { status: 500 });
+      return jsonResponse({ ok: false, error: genericUpstreamError }, { status: 500 });
     }
 
     let payload;
@@ -67,22 +99,25 @@ export default {
     };
 
     try {
-      console.log("[contact-proxy] forward start");
-      const upstreamResponse = await fetch(env.N8N_WEBHOOK_URL, {
+      console.log("[contact-proxy] forward start", { webhookHost: webhookUrlInfo.hostname });
+      const upstreamResponse = await fetch(webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(patchedPayload),
       });
       const upstreamBodyText = await upstreamResponse.text();
       const upstreamBody = parseUpstreamBody(upstreamBodyText);
-      console.log("[contact-proxy] forward done", upstreamResponse.status);
+      console.log("[contact-proxy] forward done", {
+        webhookHost: webhookUrlInfo.hostname,
+        upstreamStatus: upstreamResponse.status,
+        upstreamBody: summarizeBody(upstreamBodyText),
+      });
 
       if (!upstreamResponse.ok) {
         return jsonResponse(
           {
             ok: false,
-            upstreamStatus: upstreamResponse.status,
-            error: upstreamBodyText || "Upstream request failed",
+            error: genericUpstreamError,
           },
           { status: 502 }
         );
@@ -90,16 +125,17 @@ export default {
 
       return jsonResponse({
         ok: true,
-        upstreamStatus: upstreamResponse.status,
-        upstreamBody,
+        message: upstreamBody?.message || "Sent",
       });
     } catch (error) {
-      console.log("[contact-proxy] upstream error", error);
+      console.log("[contact-proxy] upstream error", {
+        webhookHost: webhookUrlInfo.hostname,
+        error: error instanceof Error ? error.message : String(error),
+      });
       return jsonResponse(
         {
           ok: false,
-          upstreamStatus: 502,
-          error: error instanceof Error ? error.message : "Upstream request failed",
+          error: genericUpstreamError,
         },
         { status: 502 }
       );

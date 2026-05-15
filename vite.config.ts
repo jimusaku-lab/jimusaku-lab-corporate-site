@@ -5,6 +5,9 @@ import react from '@vitejs/plugin-react';
 // Vite の設定
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  if (mode === 'production' && !env.VITE_CONTACT_ENDPOINT) {
+    throw new Error('Missing VITE_CONTACT_ENDPOINT. Set it to the contact proxy endpoint before building.');
+  }
   const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1] ?? '';
   const basePath =
     env.VITE_BASE_PATH ||
